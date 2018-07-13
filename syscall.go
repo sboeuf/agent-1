@@ -33,6 +33,7 @@ import (
 const mountPerm = os.FileMode(0755)
 const devPath = "/dev"
 const mntOptions9p = "trans=virtio,version=9p2000.L"
+const blockDevDetectionTimeout = 10
 
 // bindMount bind mounts a source in to a destination, with the recursive
 // flag if needed.
@@ -194,7 +195,7 @@ func waitForBlockDevice(deviceName string, isSCSIAddr bool) error {
 	select {
 	case <-doneListening:
 		close(done)
-	case <-time.After(time.Duration(1) * time.Second):
+	case <-time.After(time.Duration(blockDevDetectionTimeout) * time.Second):
 		close(done)
 		return fmt.Errorf("Timed out waiting for device %s", deviceName)
 	}
